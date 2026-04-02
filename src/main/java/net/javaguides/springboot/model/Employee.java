@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity //Entity declare the class as and entity jpa
+@Table(name = "employee")
 public class Employee {
 
     @Id
