@@ -6,24 +6,37 @@ import net.javaguides.springboot.service.impl.EmployeeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.given;
 
+@ExtendWith(MockitoExtension.class)
 public class EmployeeServiceTest {
 
-
+    @Mock
     private EmployeeRepository employeeRepository;
 
-    private EmployeeService employeeService;
+    @InjectMocks
+    private EmployeeServiceImpl employeeService;
+
+    private Employee employee;
 
     @BeforeEach
     public void setUp() {
-        employeeRepository = mock(EmployeeRepository.class);
-        employeeService = new EmployeeServiceImpl(employeeRepository);
+        //employeeRepository = mock(EmployeeRepository.class);
+        //employeeService = new EmployeeServiceImpl(employeeRepository);
+        employee = Employee.builder()
+                .id(1)
+                .firstName("Luis Jair")
+                .lastName("Lopez Murillo")
+                .email("luizz.jair@gmail.com")
+                .build();
     }
 
     //JUnit test for saveEmployee method
@@ -31,16 +44,11 @@ public class EmployeeServiceTest {
     @DisplayName("JUnit test for saveEmployee method")
     public void givenEmployeeObject_whenSaveEmployee_thenReturnEmployeeObject() {
         //given - precondition
-        Employee employee = Employee.builder()
-                .id(1)
-                .firstName("Luis Jair")
-                .lastName("Lopez Murillo")
-                .email("luizz.jair@gmail.com")
-                .build();
+        //setUp()
 
-        BDDMockito.given(employeeRepository.findByEmail(employee.getEmail()))
+        given(employeeRepository.findByEmail(employee.getEmail()))
                 .willReturn(Optional.empty());
-        BDDMockito.given(employeeRepository.save(employee)).willReturn(employee);
+        given(employeeRepository.save(employee)).willReturn(employee);
 
         //when - action or behavior
         Employee savedEmployee = employeeService.saveEmployee(employee);
