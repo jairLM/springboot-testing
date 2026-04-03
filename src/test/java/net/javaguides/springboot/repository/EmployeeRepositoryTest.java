@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -94,7 +91,26 @@ public class EmployeeRepositoryTest {
 
       //then - verify the output
       assertThat(employeeDb).isNotNull();
-  }
+    }
+
+  //JUnit test to get an employee by email using custom method in repository
+    @Test
+    @DisplayName("JUnit test to get an employee by email using custom method in repository")
+    public void givenEmployeeEmail_whenFindByEmail_thenReturnEmployee(){
+      //given - precondition
+        Employee employee = Employee.builder()
+                .firstName("Luis Jair")
+                .lastName("Lopez Murillo")
+                .email("luizz.jair@gmail.com")
+                .build();
+        employeeRepository.save(employee);
+
+      //when - action or behavior
+        Employee employeeDb = employeeRepository.findByEmail(employee.getEmail()).get();
+
+      //then - verify the output
+        assertThat(employeeDb).isNotNull();
+    }
 
 
 
