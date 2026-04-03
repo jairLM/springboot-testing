@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -43,6 +45,37 @@ public class EmployeeRepositoryTest {
 
 
     }
+
+    //JUnit test for get all employees operation
+    @Test
+    @DisplayName("JUnit test for get all employees operation")
+    public void givenEmployeesList_whenFindAll_thenReturnEmployeesList(){
+        //given - precondition
+        Employee employee1 = Employee.builder()
+                .firstName("Luis Jair")
+                .lastName("Lopez Murillo")
+                .email("luizz.jair@gmail.com")
+                .build();
+
+        Employee employee2 = Employee.builder()
+                .firstName("Evelyn")
+                .lastName("Serrano Rocha")
+                .email("evse@gmail.com")
+                .build();
+
+        employeeRepository.save(employee1);
+        employeeRepository.save(employee2);
+
+        //when - action or behavior
+        List<Employee> employeeList = employeeRepository.findAll();
+
+        //then - verify the output
+        assertThat(employeeList).isNotNull();
+        assertThat(employeeList.size()).isEqualTo(2);
+
+    }
+
+
 
 
 
