@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -32,6 +33,8 @@ public class EmployeeServiceTest {
 
     private Employee employee;
 
+    private List<Employee> employeeList;
+
     @BeforeEach
     public void setUp() {
         //employeeRepository = mock(EmployeeRepository.class);
@@ -42,6 +45,17 @@ public class EmployeeServiceTest {
                 .lastName("Lopez Murillo")
                 .email("luizz.jair@gmail.com")
                 .build();
+
+        employeeList = List.of(
+                employee,
+                Employee.builder()
+                        .id(2)
+                        .firstName("Evelyn")
+                        .lastName("Serrano Rocha")
+                        .email("evse@gmail.com")
+                        .build()
+
+        );
     }
 
     //JUnit test for saveEmployee method
@@ -82,6 +96,21 @@ public class EmployeeServiceTest {
 
     }
 
+    //JUnit test for testing get all employees
+    @Test
+    @DisplayName("JUnit test for testing get all employees")
+    public void givenEmployeeList_whenGetAllEmployees_thenReturnAllEmployeesList() {
+        //given - precondition
+        given(employeeRepository.findAll()).willReturn(employeeList);
+
+        //when - action or behavior
+        List<Employee> employeeListInDb = employeeService.getAllEmployees();
+
+        //then - verify the output
+        assertThat(employeeListInDb).isNotNull();
+        assertThat(employeeListInDb.size()).isEqualTo(2);
+
+    }
 
 
 }
