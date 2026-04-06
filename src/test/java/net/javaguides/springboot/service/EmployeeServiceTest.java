@@ -143,5 +143,21 @@ public class EmployeeServiceTest {
 
     }
 
+    //JUnit test for update employee method
+    @Test
+    @DisplayName("JUnit test for update employee method")
+    public void givenAnEmployeeObject_whenUpdateEmployee_thenReturnUpdateEmployee(){
+        //given - precondition
+        given(employeeRepository.save(employee)).willReturn(employee);
+        employee.setEmail("brook_98@live.com");
+
+        //when - action or behavior
+        Employee updatedEmployee = employeeService.updateEmployee(employee);
+
+        //then - verify the output
+        assertThat(updatedEmployee.getEmail()).isEqualTo("brook_98@live.com");
+
+    }
+
 
 }
