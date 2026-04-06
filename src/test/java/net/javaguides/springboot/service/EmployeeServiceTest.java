@@ -12,10 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -109,6 +110,21 @@ public class EmployeeServiceTest {
         //then - verify the output
         assertThat(employeeListInDb).isNotNull();
         assertThat(employeeListInDb.size()).isEqualTo(2);
+
+    }
+
+    //JUnit test for testing get all employees
+    @Test
+    @DisplayName("JUnit test for testing get all employees (negative scenario)")
+    public void givenEmptyEmployeeList_whenGetAllEmployees_thenReturnEmptyEmployeesList() {
+        //given - precondition
+        given(employeeRepository.findAll()).willReturn(Collections.emptyList());
+
+        //when - action or behavior
+        List<Employee> employeeListInDb = employeeService.getAllEmployees();
+
+        //then - verify the output
+        assertThat(employeeListInDb).isEmpty();
 
     }
 
