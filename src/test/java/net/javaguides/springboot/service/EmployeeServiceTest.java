@@ -41,7 +41,7 @@ public class EmployeeServiceTest {
         //employeeRepository = mock(EmployeeRepository.class);
         //employeeService = new EmployeeServiceImpl(employeeRepository);
         employee = Employee.builder()
-                .id(1)
+                .id(1L)
                 .firstName("Luis Jair")
                 .lastName("Lopez Murillo")
                 .email("luizz.jair@gmail.com")
@@ -50,7 +50,7 @@ public class EmployeeServiceTest {
         employeeList = List.of(
                 employee,
                 Employee.builder()
-                        .id(2)
+                        .id(2L)
                         .firstName("Evelyn")
                         .lastName("Serrano Rocha")
                         .email("evse@gmail.com")
