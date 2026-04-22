@@ -13,6 +13,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -77,6 +78,33 @@ public class EmployeeControllerTest {
         response.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.size()", is(employeeList.size())));
+
+    }
+
+    //positive scenario
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnEmployeeObject() throws Exception {
+        //given - precondition
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("email@live.com")
+                .build();
+
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.of(employee));
+
+
+        //when - action or behavior that we're going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
 
     }
 
