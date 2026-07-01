@@ -108,4 +108,30 @@ public class EmployeeControllerTest {
 
     }
 
+    //negative scenario
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnEmpty() throws Exception {
+        //given - precondition
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("email@live.com")
+                .build();
+
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.empty());
+
+
+        //when - action or behavior that we're going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+
+        //then - verify the output
+        response.andExpect(status().isNotFound())
+                .andDo(print());
+
+    }
+
+
+
 }
