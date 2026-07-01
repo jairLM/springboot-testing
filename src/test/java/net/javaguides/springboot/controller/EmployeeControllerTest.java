@@ -169,6 +169,35 @@ public class EmployeeControllerTest {
     }
 
 
+    //update Employee negative scenario
+    @Test
+    public void givenUpdatedEmployee_whenUpdateEmployee_thenReturn404() throws Exception {
+
+        //given - precondition or set up
+        long employeeId = 1L;
+
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Jair")
+                .lastName("Lopez")
+                .email("jair@live.com")
+                .build();
+
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.empty());
+        given(employeeService.saveEmployee(any(Employee.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+        //when - action or behavior that we are going to test
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", employeeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedEmployee)));
+
+        //then - verify the output
+        response.andExpect(status().isNotFound())
+                .andDo(print());
+
+
+    }
+
+
 
 
 }
