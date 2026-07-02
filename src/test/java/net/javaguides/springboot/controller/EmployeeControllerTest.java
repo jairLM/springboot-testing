@@ -18,6 +18,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -194,6 +195,24 @@ public class EmployeeControllerTest {
         response.andExpect(status().isNotFound())
                 .andDo(print());
 
+
+    }
+
+    //JUnit test to delete employee Rest API
+    @Test
+    public void givenEmployeeId_whenDeleteEmployee_thenReturn200() throws Exception {
+        //given - precondition
+        long employeeId = 1L;
+        willDoNothing().given(employeeService).deleteEmployee(employeeId);
+
+        //when - action or behavior that we're going to test
+        ResultActions response = mockMvc.perform(delete("/api/employees/{id}", employeeId));
+
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().string("Employee deleted successfully! "));
 
     }
 
