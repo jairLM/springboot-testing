@@ -14,15 +14,11 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -197,6 +193,30 @@ public class EmployeeControllerITest {
         response.andExpect(status().isNotFound())
                 .andDo(print());
 
+
+    }
+
+
+    //JUnit test to delete employee Rest API
+    @Test
+    void givenEmployeeId_whenDeleteEmployee_thenReturn200() throws Exception {
+        //given - precondition
+        Employee savedEmployee = Employee.builder()
+                .firstName("Jair")
+                .lastName("Lopez")
+                .email("jair@live.com")
+                .build();
+
+        employeeRepository.save(savedEmployee);
+
+        //when - action or behavior that we're going to test
+        ResultActions response = mockMvc.perform(delete("/api/employees/{id}", savedEmployee.getId()));
+
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().string("Employee deleted successfully! "));
 
     }
 
