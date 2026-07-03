@@ -173,10 +173,18 @@ public class EmployeeControllerITest {
 
         //given - precondition or set up
         long employeeId = 1L;
-        Employee updatedEmployee = Employee.builder()
+        Employee savedEmployee = Employee.builder()
                 .firstName("Jair")
                 .lastName("Lopez")
                 .email("jair@live.com")
+                .build();
+
+        employeeRepository.save(savedEmployee);
+
+        Employee updatedEmployee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("email@live.com")
                 .build();
 
 
