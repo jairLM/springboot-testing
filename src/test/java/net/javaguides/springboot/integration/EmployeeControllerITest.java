@@ -14,6 +14,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
@@ -66,7 +67,7 @@ public class EmployeeControllerITest {
     }
 
     @Test
-    public void givenListOfEmployees_whenGetAllEmployees_thenReturnEmployeeList() throws Exception {
+    void givenListOfEmployees_whenGetAllEmployees_thenReturnEmployeeList() throws Exception {
         //given - precondition
         List<Employee> employeeList = new ArrayList<>();
         employeeList.add(Employee.builder().firstName("Jair").lastName("Murillo").email("luizz.jair@gmail.com").build());
@@ -81,6 +82,53 @@ public class EmployeeControllerITest {
         response.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.size()", is(employeeList.size())));
+
+    }
+
+    @Test
+    void givenEmployeeId_whenGetEmployeeById_thenReturnEmployeeObject() throws Exception {
+        //given - precondition
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("email@live.com")
+                .build();
+        employeeRepository.save(employee);
+
+        //when - action or behavior that we're going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employee.getId()));
+
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
+
+    }
+
+
+    //negative scenario
+    @Test
+    void givenEmployeeId_whenGetEmployeeById_thenReturnEmpty() throws Exception {
+        //given - precondition
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("email@live.com")
+                .build();
+        employeeRepository.save(employee);
+
+
+        //when - action or behavior that we're going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+
+        //then - verify the output
+        response.andExpect(status().isNotFound())
+                .andDo(print());
 
     }
 
