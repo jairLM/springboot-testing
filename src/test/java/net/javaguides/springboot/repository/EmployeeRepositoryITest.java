@@ -1,0 +1,231 @@
+package net.javaguides.springboot.repository;
+
+import net.javaguides.springboot.model.Employee;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Springboot-test provides @DataJpaTest annotation to test the persistence layer
+ * components that will autoconfigure in memory embedded database for testing purposes.
+ * Is not necessary to use mocks for this kind of tests.
+ *
+ * @see DataJpaTest
+ * <p>
+ * convention used in this test is (given_when_then)
+ * <p>
+ * BeforeEach used to declare that the current method should be
+ * executed before each @Test method in the current test class
+ *
+ */
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) //this disables the default in-memory database
+public class EmployeeRepositoryITest {
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    private Employee employee;
+
+
+    @BeforeEach
+    void setUp(){
+        employee = Employee.builder()
+                .firstName("Luis Jair")
+                .lastName("Lopez Murillo")
+                .email("luizz.jair@gmail.com")
+                .build();
+
+        employeeRepository.deleteAll();
+    }
+
+
+
+    @Test
+    @DisplayName("JUnit test for saving employee operation")
+    void givenEmployeeObject_whenSave_thenReturnSavedEmployee() {
+
+        //given - precondition
+        // calling setUp()
+
+        //when - action or behavior
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+        assertThat(savedEmployee.getId()).isGreaterThan(0);
+
+
+    }
+
+    //JUnit test for get all employees operation
+    @Test
+    @DisplayName("JUnit test for get all employees operation")
+    void givenEmployeesList_whenFindAll_thenReturnEmployeesList() {
+        //given - precondition
+        // calling setUp()
+
+        Employee employee2 = Employee.builder()
+                .firstName("Evelyn")
+                .lastName("Serrano Rocha")
+                .email("evse@gmail.com")
+                .build();
+
+        employeeRepository.save(employee);
+        employeeRepository.save(employee2);
+
+        //when - action or behavior
+        List<Employee> employeeList = employeeRepository.findAll();
+
+        //then - verify the output
+        assertThat(employeeList).isNotNull();
+        assertThat(employeeList.size()).isEqualTo(2);
+
+    }
+
+    //JUnit test for get employee by id
+    @Test
+    @DisplayName("JUnit test for get employee by id")
+    void givenAEmployee_whenFindById_thenReturnAEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+
+        //when - action or behavior
+        Employee employeeDb = employeeRepository.findById(employee.getId()).get();
+
+        //then - verify the output
+        assertThat(employeeDb).isNotNull();
+    }
+
+    //JUnit test to get an employee by email using custom method in repository
+    @Test
+    @DisplayName("JUnit test to get an employee by email using custom method in repository")
+    void givenEmployeeEmail_whenFindByEmail_thenReturnEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+
+        //when - action or behavior
+        Employee employeeDb = employeeRepository.findByEmail(employee.getEmail()).get();
+
+        //then - verify the output
+        assertThat(employeeDb).isNotNull();
+    }
+
+    //JUnit test to update an employee
+    @Test
+    @DisplayName("JUnit test to update an employee")
+    void givenEmployeeObject_whenUpdateEmployee_thenReturnUpdatedEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+
+        //when - action or behavior
+        Employee savedEmployee = employeeRepository.findById(employee.getId()).get();
+        savedEmployee.setEmail("brook_98@live.com");
+        savedEmployee.setFirstName("jairsz");
+        Employee updatedEmployee = employeeRepository.save(savedEmployee);
+
+        //then - verify the output
+        assertThat(updatedEmployee.getEmail()).isEqualTo("brook_98@live.com");
+        assertThat(updatedEmployee.getFirstName()).isEqualTo("jairsz");
+
+    }
+
+    //JUnit test to delete employee operation
+    @Test
+    @DisplayName("JUnit test to delete employee operation")
+    void givenAEmployee_whenDelete_thenRemoveEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+
+        //when - action or behavior
+        employeeRepository.delete(employee);
+        Optional<Employee> employeeDeleted = employeeRepository.findById(employee.getId());
+
+        //then - verify the output
+        assertThat(employeeDeleted).isEmpty();
+
+    }
+
+    //JUnit test for custom query using JPQL with index params
+    @Test
+    @DisplayName("JUnit test for custom query using JPQL with index params")
+    void givenFirstNameAndLastName_whenFindByJPQL_thenReturnEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+        String firstName = "Luis Jair";
+        String lastName = "Lopez Murillo";
+
+        //when - action or behavior
+        Employee savedEmployee = employeeRepository.findByJPQL(firstName, lastName);
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+
+    }
+
+    //JUnit test for custom query using JPQL with named params
+    @Test
+    @DisplayName("JUnit test for custom query using JPQL with named params")
+    void givenFirstNameAndLastName_whenFindByJPQLNamedParams_thenReturnEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+        String firstName = "Luis Jair";
+        String lastName = "Lopez Murillo";
+
+        //when - action or behavior
+        Employee savedEmployee = employeeRepository.findByJPQLNamedParams(firstName, lastName);
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+
+    }
+
+    //JUnit test for custom query using Native query with index params
+    @Test
+    @DisplayName("JUnit test for custom query using Native query with index params")
+    void givenFirstAndLastName_whenFindByNativeSQL_thenReturnEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+
+        //when - action or behavior
+        Employee savedEmployee = employeeRepository.findByNativeSQL(employee.getFirstName(), employee.getLastName());
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+
+    }
+
+    //JUnit test for custom query using Native query with named params
+    @Test
+    @DisplayName("JUnit test for custom query using Native query with named params")
+    void givenFirstAndLastName_whenFindByNativeSQLNamedParaMS_thenReturnEmployee() {
+        //given - precondition
+        // calling setUp()
+        employeeRepository.save(employee);
+
+        //when - action or behavior
+        Employee savedEmployee = employeeRepository.findByNativeSQLNamedParams(employee.getFirstName(), employee.getLastName());
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+
+    }
+
+
+
+}
