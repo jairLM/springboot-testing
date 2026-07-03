@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -129,6 +129,66 @@ public class EmployeeControllerITest {
         //then - verify the output
         response.andExpect(status().isNotFound())
                 .andDo(print());
+
+    }
+
+
+    //update Employee positive scenario
+    @Test
+    void givenUpdatedEmployee_whenUpdateEmployee_thenReturnUpdatedEmployeeObject() throws Exception {
+
+        //given - precondition or set up
+        Employee savedEmployee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("email@live.com")
+                .build();
+        employeeRepository.save(savedEmployee);
+
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Jair")
+                .lastName("Lopez")
+                .email("jair@live.com")
+                .build();
+
+        //when - action or behavior that we are going to test
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", savedEmployee.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedEmployee)));
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(updatedEmployee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(updatedEmployee.getLastName())))
+                .andExpect(jsonPath("$.email", is(updatedEmployee.getEmail())));
+
+
+    }
+
+
+    //update Employee negative scenario
+    @Test
+    void givenUpdatedEmployee_whenUpdateEmployee_thenReturn404() throws Exception {
+
+        //given - precondition or set up
+        long employeeId = 1L;
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Jair")
+                .lastName("Lopez")
+                .email("jair@live.com")
+                .build();
+
+
+        //when - action or behavior that we are going to test
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", employeeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedEmployee)));
+
+        //then - verify the output
+        response.andExpect(status().isNotFound())
+                .andDo(print());
+
 
     }
 
