@@ -4,7 +4,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.mysql.MySQLContainer;
 
-public abstract class AbstractionBaseTest {
+public abstract class AbstractionContainerBaseTest {
 
     static final MySQLContainer mySQLContainer;
 
